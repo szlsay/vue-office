@@ -1,13 +1,16 @@
 <template>
   <div>
+    <button @click="openWord()">打开 Word</button>
     <div
       id="websiteEditorElem"
       style="height: 300px; background: #ffffff"
     ></div>
+
   </div>
 </template>
 
 <script>
+import { exportHtmlToDocx } from 'editor-to-word';
 import E from "wangeditor";
 export default {
   name: "wangEditor",
@@ -15,10 +18,16 @@ export default {
     return {
       phoneEditor: "",
       name: "",
-      content: ""
+      content: "",
+      html: ''
     };
   },
-  methods: {},
+  methods: {
+    openWord() {
+      console.log("000", this.html)
+      exportHtmlToDocx(this.html, 'testFileName');
+    }
+  },
   mounted() {
     this.phoneEditor = new E("#websiteEditorElem");
     // 上传图片到服务器，base64形式
@@ -44,8 +53,8 @@ export default {
     this.phoneEditor.txt.html(this.content);
 
     this.phoneEditor.config.onchange = (html) => {
-      this.info_ = html; // 绑定当前逐渐地值
-      this.$emit("change", this.info_); // 将内容同步到父组件中
+      this.html = html; // 绑定当前逐渐地值
+      this.$emit("change", this.html); // 将内容同步到父组件中
     };
   },
 };
