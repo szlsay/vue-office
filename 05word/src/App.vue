@@ -1,32 +1,57 @@
 <template>
   <div>
-    <button @click="openWord()">打开 Word</button>
-    <div
-      id="websiteEditorElem"
-      style="height: 300px; background: #ffffff"
-    ></div>
-
+    <button @click="showWord()">在线展示 Word</button>
+    <button @click="openWord()">导出 Word</button>
+    <div class="container">
+      <div
+        class="left"
+        id="websiteEditorElem"
+        style="height: 300px; background: #ffffff"
+      ></div>
+      <div class="right">
+        <vue-office-docx :src="src" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { exportHtmlToDocx } from 'editor-to-word';
+import { exportHtmlToDocx, genDocument } from "editor-to-word";
+import VueOfficeDocx from "@vue-office/docx";
+import "@vue-office/docx/lib/index.css";
+import { Packer } from "docx";
 import E from "wangeditor";
+import { trimHtml } from "./utils";
 export default {
   name: "wangEditor",
+  components: {
+    VueOfficeDocx,
+  },
   data() {
     return {
+      src: "",
       phoneEditor: "",
       name: "",
       content: "",
-      html: ''
+      html: "",
     };
   },
   methods: {
+    async showWord() {
+      console.log("000", this.html);
+      const doc = await genDocument(trimHtml(this.html));
+      const file = await Packer.toBlob(doc);
+      console.log(file);
+      let reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = (loadEvent) => {
+        let arrayBuffer = loadEvent.target.result;
+        this.src = arrayBuffer;
+      };
+    },
     openWord() {
-      console.log("000", this.html)
-      exportHtmlToDocx(this.html, 'testFileName');
-    }
+      exportHtmlToDocx(this.html, "testFileName");
+    },
   },
   mounted() {
     this.phoneEditor = new E("#websiteEditorElem");
@@ -59,3 +84,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+}
+.left {
+  width: 50%;
+}
+
+.right {
+  width: 50%;
+  height: 80%;
+}
+</style>
