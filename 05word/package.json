@@ -13,6 +13,7 @@
     "editor-to-word": "^0.2.7",
     "element-ui": "^2.15.13",
     "vue": "^2.6.14",
+    "vuedraggable": "^2.24.3",
     "wangeditor": "^4.7.15"
   },
   "devDependencies": {
